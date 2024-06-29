@@ -56,12 +56,19 @@ module open_nic_shell #(
   output                   [1:0] qsfp_lpmode,
   output                   [1:0] qsfp_modsell,
   input                    [3:0] satellite_gpio,
+`elsif __alivu13p__
+  output                   [1:0] qsfp_resetl, 
+  input                    [1:0] qsfp_modprsl,
+  input                    [1:0] qsfp_intl,   
+  output                   [1:0] qsfp_lpmode,
 `elsif __au45n__
   input                    [1:0] satellite_gpio,
 `endif
 
+`ifndef __alivu13p__
   input                          satellite_uart_0_rxd,
   output                         satellite_uart_0_txd,
+`endif
 
 `ifdef __au45n__
 // U45N has 24 PCIe lanes: x16(host CPU) + x8(ARM CPU)
@@ -497,6 +504,20 @@ module open_nic_shell #(
   assign qdma_pcie_txn       = pcie_txn;
 `endif
 
+`ifdef __alivu13p__
+  wire                    [3:0] satellite_gpio;
+  wire                          satellite_uart_0_rxd;
+  wire                          satellite_uart_0_txd;
+
+  assign satellite_gpio = 4'd0;
+  assign satellite_uart_0_rxd = 1'b1;
+
+  assign qsfp_lpmode = 2'b00;
+  assign qsfp_resetl = 2'b11;
+
+`endif
+
+
   system_config #(
     .BUILD_TIMESTAMP (BUILD_TIMESTAMP),
     .NUM_QDMA        (NUM_QDMA),
@@ -630,7 +651,9 @@ module open_nic_shell #(
 
     .satellite_uart_0_rxd (satellite_uart_0_rxd),
     .satellite_uart_0_txd (satellite_uart_0_txd),
+  `ifndef __alivu13p__
     .satellite_gpio_0     (satellite_gpio),
+  `endif
 
   `ifdef __au280__
     .hbm_temp_1_0            (7'd0),

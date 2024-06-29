@@ -45,6 +45,9 @@ proc _do_post_impl {build_dir top impl_run {zynq_family 0} board} {
         if {$board == "au45n"} {
             set mem_size 256
             set start_address 0x00000000
+        } elseif {$board == "alivu13p"} {
+            set mem_size 256
+            set start_address 0x00000000
         } else {
             set mem_size 128
             set start_address 0x01002000
@@ -270,6 +273,9 @@ dict for {module module_dir} $module_dict {
 
     foreach ip $ips {
         # Pre-save IP name and its build directory to a global dictionary
+        if {[string equal $ip "cms_subsystem_0"] && [string equal $board "alivu13p"]} {
+            continue
+        }
         dict append ip_dict $ip ${ip_build_dir}/${ip}
 
         # Remove IP that does not exists in the project, which may have been
@@ -348,6 +354,9 @@ set_property verilog_define $verilog_define [current_fileset]
 # Read IPs from finished IP runs
 # - Some IPs are board-specific and will be ignored for other board targets
 dict for {ip ip_dir} $ip_dict {
+    if {[string equal $ip "cms_subsystem_0"] && [string equal $board "alivu13p"]} {
+        continue
+    }
     read_ip -quiet ${ip_dir}/${ip}.xci
 }
 

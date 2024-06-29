@@ -644,6 +644,18 @@ end
     .ext_spi_clk   (cms_clk)
   );
 
+`ifdef __alivu13p__
+  assign axil_cms_awready = 0;
+  assign axil_cms_wdata = 0;
+  assign axil_cms_wstrb = 0;
+  assign axil_cms_wvalid = 0;
+  assign axil_cms_bresp = 0;
+  assign axil_cms_bvalid = 0;
+  assign axil_cms_arready = 0;
+  assign axil_cms_rdata = 0;
+  assign axil_cms_rresp = 0;
+  assign axil_cms_rvalid = 0;
+`else
 axi_lite_clock_converter axi_clock_conv_cms_inst (
       .s_axi_awaddr  (axil_cms_awaddr),
       .s_axi_awprot  (axil_cms_awprot),
@@ -751,5 +763,5 @@ cms_subsystem_wrapper
     .satellite_uart_0_rxd    (satellite_uart_0_rxd),
     .satellite_uart_0_txd    (satellite_uart_0_txd)
   );
-
+`endif
 endmodule: system_config
